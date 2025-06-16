@@ -1,0 +1,460 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "API Documentation.",
+    "version": "1.0.0",
+    "title": "API"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:9000/api/v1"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "internalReference": {
+            "type": "string"
+          },
+          "shellId": {
+            "type": "number"
+          },
+          "inventoryStatus": {
+            "type": "string",
+            "enum": ["INSTOCK", "LOWSTOCK", "OUTOFSTOCK"]
+          },
+          "rating": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductInput": {
+        "type": "object",
+        "required": ["code", "name"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2
+          },
+          "description": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "internalReference": {
+            "type": "string"
+          },
+          "shellId": {
+            "type": "number"
+          },
+          "inventoryStatus": {
+            "type": "string",
+            "enum": ["INSTOCK", "LOWSTOCK", "OUTOFSTOCK"]
+          },
+          "rating": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "responses": {
+      "INTERNAL_SERVER_ERROR": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "example": "Internal server error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/products": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "Get Products",
+        "description": "This endpoint will return list of products",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successfull",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "page": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "totalPages": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "totalItems": {
+                      "type": "integer",
+                      "example": 2
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "code": "BBB",
+                      "name": "Product B",
+                      "description": "",
+                      "image": "",
+                      "category": "",
+                      "price": 10,
+                      "quantity": 0,
+                      "internalReference": "",
+                      "shellId": 0,
+                      "inventoryStatus": "INSTOCK",
+                      "rating": 0,
+                      "createdAt": "2025-06-16T13:37:12.707Z",
+                      "updatedAt": "2025-06-16T13:37:12.707Z",
+                      "__v": 0,
+                      "id": "68501e08b4e3209c0b51f923"
+                    }
+                  ],
+                  "page": 1,
+                  "limit": 1,
+                  "totalPages": 2,
+                  "totalItems": 2
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/INTERNAL_SERVER_ERROR"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Product"],
+        "summary": "Create a new product",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              },
+              "example": {
+                "name": "Product C",
+                "code": "CCC",
+                "description": "",
+                "image": "",
+                "category": "",
+                "price": 10,
+                "quantity": 0,
+                "internalReference": "",
+                "shellId": 0,
+                "inventoryStatus": "OUTOFSTOCK",
+                "rating": 0
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                },
+                "example": {
+                  "code": "CCC",
+                  "name": "Product C",
+                  "description": "",
+                  "image": "",
+                  "category": "",
+                  "price": 10,
+                  "quantity": 0,
+                  "internalReference": "",
+                  "shellId": 0,
+                  "inventoryStatus": "OUTOFSTOCK",
+                  "rating": 0,
+                  "createdAt": "2025-06-16T13:37:39.957Z",
+                  "updatedAt": "2025-06-16T13:37:39.957Z",
+                  "id": "68501e23b4e3209c0b51f927"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Bad Request",
+                  "message": "Name must have at least 2 characters"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/INTERNAL_SERVER_ERROR"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": ["Product"],
+        "summary": "Get a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                },
+                "example": {
+                  "code": "CCC",
+                  "name": "Product CQ",
+                  "description": "COQ",
+                  "image": "test img",
+                  "category": "C",
+                  "price": 25,
+                  "quantity": 5,
+                  "internalReference": "REF",
+                  "shellId": 1,
+                  "inventoryStatus": "INSTOCK",
+                  "rating": 1,
+                  "createdAt": "2025-06-16T13:37:39.957Z",
+                  "updatedAt": "2025-06-16T13:42:36.685Z",
+                  "id": "68501e23b4e3209c0b51f927"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/INTERNAL_SERVER_ERROR"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Product"],
+        "summary": "Update a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the product to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              },
+              "example": {
+                "name": "Product CQ",
+                "code": "CCC",
+                "description": "COQ",
+                "image": "test img",
+                "category": "C",
+                "price": 25,
+                "quantity": 5,
+                "internalReference": "REF",
+                "shellId": 1,
+                "inventoryStatus": "INSTOCK",
+                "rating": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                },
+                "example": {
+                  "code": "CCC",
+                  "name": "Product CQ",
+                  "description": "COQ",
+                  "image": "test img",
+                  "category": "C",
+                  "price": 25,
+                  "quantity": 5,
+                  "internalReference": "REF",
+                  "shellId": 1,
+                  "inventoryStatus": "INSTOCK",
+                  "rating": 1,
+                  "createdAt": "2025-06-16T13:37:39.957Z",
+                  "updatedAt": "2025-06-16T13:42:36.685Z",
+                  "id": "68501e23b4e3209c0b51f927"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "error": "Bad Request",
+                  "message": "Name must have at least 2 characters"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/INTERNAL_SERVER_ERROR"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Product"],
+        "summary": "Delete a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the product to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product deleted status (true if deleted)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                },
+                "example": true
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/INTERNAL_SERVER_ERROR"
+          }
+        }
+      }
+    }
+  }
+}
