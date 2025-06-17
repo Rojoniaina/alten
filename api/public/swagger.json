@@ -11,6 +11,13 @@
     }
   ],
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "Product": {
         "type": "object",
@@ -128,6 +135,11 @@
       "get": {
         "tags": ["Product"],
         "summary": "Get Products",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "description": "This endpoint will return list of products",
         "parameters": [
           {
@@ -217,6 +229,11 @@
       "post": {
         "tags": ["Product"],
         "summary": "Create a new product",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -295,6 +312,11 @@
       "get": {
         "tags": ["Product"],
         "summary": "Get a product by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -340,6 +362,11 @@
       "patch": {
         "tags": ["Product"],
         "summary": "Update a product by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -427,6 +454,11 @@
       "delete": {
         "tags": ["Product"],
         "summary": "Delete a product by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -447,6 +479,209 @@
                   "type": "boolean"
                 },
                 "example": true
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/INTERNAL_SERVER_ERROR"
+          }
+        }
+      }
+    },
+    "/account": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Create a new user account",
+        "description": "Creates a new user account with username, firstname, email and password.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "firstname", "email", "password"],
+                "properties": {
+                  "username": { "type": "string", "example": "admin" },
+                  "firstname": { "type": "string", "example": "admin" },
+                  "email": { "type": "string", "example": "admin@admin.com" },
+                  "password": { "type": "string", "example": "aina" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": { "type": "string", "example": "admin" },
+                    "firstname": { "type": "string", "example": "admin" },
+                    "email": { "type": "string", "example": "admin@admin.com" },
+                    "password": {
+                      "type": "string",
+                      "example": "$2b$10$FiIh4tq9TWFizh7o9o9TZ.YfVBxA578yJz2asxUOgW46bnf9Igjrq"
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "685170b752ed3a68ceb4caa9"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-06-17T13:42:15.279Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-06-17T13:42:15.279Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 400 },
+                    "error": { "type": "string", "example": "Bad Request" },
+                    "message": {
+                      "type": "string",
+                      "example": "Firstname must have at least 2 characters"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - User already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 409 },
+                    "error": { "type": "string", "example": "Conflict" },
+                    "message": {
+                      "type": "string",
+                      "example": "User already exists"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/INTERNAL_SERVER_ERROR"
+          }
+        }
+      }
+    },
+    "/token": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login to get JWT token",
+        "description": "Authenticate a user with email and password and return a JWT token if valid.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "pattern": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+                    "example": "admin@admin.com",
+                    "description": "Must be a valid email address"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "aina",
+                    "description": "Password must have at least 1 character"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful authentication, returns JWT token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 400 },
+                    "error": { "type": "string", "example": "Bad Request" },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid email format"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 401 },
+                    "error": { "type": "string", "example": "Unauthorized" },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid email or password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 404 },
+                    "error": { "type": "string", "example": "NotFound" },
+                    "message": { "type": "string", "example": "User not found" }
+                  }
+                }
               }
             }
           },
