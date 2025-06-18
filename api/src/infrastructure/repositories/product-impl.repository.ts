@@ -1,6 +1,6 @@
 import { ProductRepository } from "../../domain/ports/product.repository";
 import {
-  AddProductInput,
+  CreateProductInput,
   Product,
   ProductPaginatedResult,
   UpdateProductInput,
@@ -45,7 +45,7 @@ export class ProductImplRepository implements ProductRepository {
     return ProductModel.findOne({ code }).exec();
   }
 
-  async create(data: AddProductInput): Promise<Product> {
+  async create(data: CreateProductInput): Promise<Product> {
     const Product = new ProductModel(data);
     await Product.save();
     return Product.toJSON();

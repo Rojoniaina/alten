@@ -1,5 +1,5 @@
 import {
-  AddProductInput,
+  CreateProductInput,
   ProductPaginatedResult,
   Product,
   UpdateProductInput,
@@ -7,7 +7,7 @@ import {
 
 export interface ProductRepository {
   findAll(page: number, limit: number): Promise<ProductPaginatedResult>;
-  create(data: AddProductInput): Promise<Product>;
+  create(data: CreateProductInput): Promise<Product>;
   findById(id: string): Promise<Product | null>;
   findByCode(code: string): Promise<Product | null>;
   update(id: string, data: UpdateProductInput): Promise<Product | null>;

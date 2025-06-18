@@ -1,6 +1,6 @@
 import { ProductAlreadyExistsError } from "../domain/errors/productAlreadyExistsError";
 import {
-  AddProductInput,
+  CreateProductInput,
   Product,
   ProductPaginatedResult,
   UpdateProductInput,
@@ -21,7 +21,7 @@ export class ProductUseCase {
     return this.repository.findById(id);
   }
 
-  async createProduct(data: AddProductInput): Promise<Product> {
+  async createProduct(data: CreateProductInput): Promise<Product> {
     const existing = await this.repository.findByCode(data.code);
 
     if (existing) {

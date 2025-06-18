@@ -21,7 +21,7 @@ export interface Product {
   updatedAt: number;
 }
 
-export type AddProductInput = {
+export type CreateProductInput = {
   code: string;
   name: string;
 } & Partial<Omit<Product, "code" | "name" | "createdAt" | "updatedAt">>;
