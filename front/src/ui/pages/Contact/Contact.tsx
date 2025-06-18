@@ -1,5 +1,5 @@
 import { Container, TextField, Button, Typography, Box } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import CustomSnackbar from "../../components/CustomSnackbar/CustomSnackbar";
 
