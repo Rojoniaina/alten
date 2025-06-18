@@ -28,7 +28,7 @@ export class CartUseCase {
     return this.cartRepo.removeItemFromCart(userId, productId);
   }
 
-  clearCart(userId: string): Promise<void> {
+  clearCart(userId: string): Promise<boolean> {
     return this.cartRepo.clearCart(userId);
   }
 }

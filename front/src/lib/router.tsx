@@ -5,6 +5,7 @@ import CreateProduct from "../ui/pages/Product/Create/CreateProduct";
 import { ProtectedRoute } from "../ui/components/ProtectedRoute/ProtectedRoute";
 import Login from "../ui/pages/Auth/Login/Login";
 import { SignUp } from "../ui/pages/Auth/SignUp/SignUp";
+import { Cart } from "../ui/pages/Cart/Cart";
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "", element: <ProductList /> },
           { path: "products/create", element: <CreateProduct /> },
+          { path: "cart", element: <Cart /> },
         ],
       },
     ],

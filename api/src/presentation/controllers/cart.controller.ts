@@ -51,6 +51,6 @@ export const removeCartItem = async (req: Request, res: Response) => {
 export const clearCart = async (req: Request, res: Response) => {
   // @ts-ignore
   const userId = req.user.id;
-  await cartServiceCase.clearCart(userId);
-  res.status(204).send();
+  const result = await cartServiceCase.clearCart(userId);
+  res.status(200).send(result);
 };

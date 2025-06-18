@@ -46,13 +46,13 @@ export class CartImplRepository implements CartRepository {
   async addItemToCart(userId: string, cartItem: CartItemInput): Promise<Cart> {
     let cart = await CartModel.findOne({ userId });
 
-    const mongoItem = {
+    const newItem = {
       productId: new Types.ObjectId(cartItem.productId),
       quantity: cartItem.quantity,
     };
 
     if (!cart) {
-      cart = new CartModel({ userId, items: [mongoItem] });
+      cart = new CartModel({ userId, items: [newItem] });
     } else {
       const index = cart.items.findIndex(
         (item) => item?.productId?._id.toString() === cartItem.productId
@@ -60,7 +60,7 @@ export class CartImplRepository implements CartRepository {
       if (index !== -1) {
         cart.items[index].quantity += cartItem.quantity;
       } else {
-        cart.items.push(mongoItem);
+        cart.items.push(newItem);
       }
     }
 
@@ -139,9 +139,12 @@ export class CartImplRepository implements CartRepository {
       throw new Error("Cart not found");
     }
 
-    cart.items.pull({ productId: new Types.ObjectId(productId) });
-
-    await cart.save();
+    if (cart.items.length === 1) {
+      await this.clearCart(userId);
+    } else {
+      cart.items.pull({ productId: new Types.ObjectId(productId) });
+      await cart.save();
+    }
 
     return {
       userId: cart?.userId?.toString() || "",
@@ -159,7 +162,8 @@ export class CartImplRepository implements CartRepository {
     };
   }
 
-  async clearCart(userId: string): Promise<void> {
-    await CartModel.deleteOne({ userId });
+  async clearCart(userId: string): Promise<boolean> {
+    const result = await CartModel.deleteOne({ userId });
+    return result.deletedCount >= 1;
   }
 }

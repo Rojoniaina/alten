@@ -6,10 +6,21 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  IconButton,
 } from "@mui/material";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import type { Product } from "../../../../../domain/Product";
+import type { CartItemInput } from "../../../../../domain/Cart";
 
-export function ProductTable({ products }: { products: Product[] }) {
+export function ProductTable({
+  products,
+  onAddToCart,
+  isPending,
+}: {
+  products: Product[];
+  onAddToCart?: (product: CartItemInput) => void;
+  isPending?: boolean;
+}) {
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -20,6 +31,7 @@ export function ProductTable({ products }: { products: Product[] }) {
             <TableCell>Prix (€)</TableCell>
             <TableCell>Quantité</TableCell>
             <TableCell>Statut</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableHead>
 
@@ -31,6 +43,24 @@ export function ProductTable({ products }: { products: Product[] }) {
               <TableCell>{product.price.toFixed(2)}</TableCell>
               <TableCell>{product.quantity}</TableCell>
               <TableCell>{product.inventoryStatus}</TableCell>
+              <TableCell>
+                {isPending ? (
+                  "En cours..."
+                ) : (
+                  <IconButton
+                    color="primary"
+                    onClick={() =>
+                      onAddToCart?.({
+                        productId: product.id,
+                        quantity: 1,
+                      })
+                    }
+                    disabled={product.quantity <= 0}
+                  >
+                    <AddShoppingCartIcon />
+                  </IconButton>
+                )}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

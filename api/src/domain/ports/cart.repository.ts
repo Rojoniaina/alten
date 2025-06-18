@@ -10,5 +10,5 @@ export interface CartRepository {
     quantity: number
   ): Promise<Cart>;
   removeItemFromCart(userId: string, productId: string): Promise<Cart>;
-  clearCart(userId: string): Promise<void>;
+  clearCart(userId: string): Promise<boolean>;
 }

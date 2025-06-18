@@ -8,52 +8,50 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useProducts } from "../../../../hooks/product/useProducts";
-import { useEffect, useState } from "react";
-import CustomSnackbar from "../../../components/CustomSnackbar/CustomSnackbar";
-import ConfirmationDialog from "../../../components/ConfirmationDialog/ConfirmationDialog";
-import type { Product } from "../../../../domain/Product";
-import { useDeleteProduct } from "../../../../hooks/product/useDeleteProduct";
+import { useState } from "react";
+import CustomSnackbar, {
+  snackbarDefaultValue,
+} from "../../../components/CustomSnackbar/CustomSnackbar";
 import { ProductTable } from "./ProductTable/ProductTable";
 import { ProductPagination } from "./ProductPagination/ProductPagination";
 import { useAuth } from "../../../../hooks/auth/useAuth";
+import { useAddItems } from "../../../../hooks/cart/useAddItem";
+import type { CartItemInput } from "../../../../domain/Cart";
+import type { SnackbarState } from "../Create/CreateProduct.types";
 
 export default function ProductList() {
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [productDelete, setProductDelete] = useState<Product | null>(null);
+  const [snackbarState, setSnackbarState] =
+    useState<SnackbarState>(snackbarDefaultValue);
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(1);
 
   const { isAdimn } = useAuth();
 
-  const { data: paginateProducts, isLoading, isError } = useProducts(page);
+  const { data: paginateProducts, isLoading } = useProducts(page);
 
-  const { mutate, isPending, isError: isErrorDelete } = useDeleteProduct();
-
-  useEffect(() => {
-    if (isError) {
-      setOpenSnackbar(true);
-    }
-  }, [isError]);
+  const { mutate } = useAddItems();
 
   const products = paginateProducts?.data ?? [];
 
   const goToCreateProduct = () => navigate("/products/create");
 
-  const closeModal = () => {
-    setOpenModal(false);
-    setProductDelete(null);
-  };
-
-  const onConfirmDelete = () => {
-    if (!productDelete) return;
-    mutate(
-      { id: productDelete.id },
-      {
-        onSuccess: closeModal,
-        onError: closeModal,
-      }
-    );
+  const onConfirmAdd = (productAdd: CartItemInput) => {
+    mutate(productAdd, {
+      onSuccess: () => {
+        setSnackbarState({
+          open: true,
+          message: "Le produit a été ajouter avec succès",
+          state: "success",
+        });
+      },
+      onError: () => {
+        setSnackbarState({
+          open: true,
+          message: "Nous n’avons pas pu ajouter le produit. Veuillez réessayer",
+          state: "error",
+        });
+      },
+    });
   };
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
@@ -63,12 +61,11 @@ export default function ProductList() {
   return (
     <Container maxWidth="md" sx={{ py: 2 }}>
       <CustomSnackbar
-        open={openSnackbar}
-        setOpen={() => setOpenModal(false)}
-        severity="error"
-        message="Erreur lors du chargement des produits"
+        open={snackbarState.open}
+        setOpen={() => setSnackbarState(snackbarDefaultValue)}
+        severity={snackbarState.state}
+        message={snackbarState.message}
       />
-
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           Liste des produits
@@ -92,7 +89,7 @@ export default function ProductList() {
           </Box>
         ) : products.length > 0 ? (
           <>
-            <ProductTable products={products} />
+            <ProductTable products={products} onAddToCart={onConfirmAdd} />
             <ProductPagination
               count={paginateProducts?.totalPages || 0}
               page={page}
@@ -105,25 +102,6 @@ export default function ProductList() {
           </Typography>
         )}
       </Stack>
-
-      {productDelete && (
-        <ConfirmationDialog
-          open={openModal}
-          onClose={closeModal}
-          onConfirm={onConfirmDelete}
-          title="Supprimer le produit"
-          description={`Êtes-vous sûr de vouloir supprimer le produit ${productDelete.name} ?`}
-          confirmText="Supprimer"
-          confirmColor="error"
-          cancelText="Annuler"
-          loading={isPending}
-          error={
-            isErrorDelete
-              ? "Impossible de supprimer le produit pour le moment. Veuillez réessayer ultérieurement"
-              : undefined
-          }
-        />
-      )}
     </Container>
   );
 }
