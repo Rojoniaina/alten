@@ -27,6 +27,7 @@ export class AuthUseCase {
     }
 
     return this.service.generateToken({
+      id: user.id,
       username: user.username,
       email: user.email,
     });

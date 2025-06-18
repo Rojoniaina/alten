@@ -15,4 +15,4 @@ export type UserInput = Pick<
   "username" | "firstname" | "email" | "password"
 >;
 
-export type UserToken = Pick<User, "email" | "username">;
+export type UserToken = Pick<User, "id" | "email" | "username">;
